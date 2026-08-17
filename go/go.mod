@@ -1,3 +1,3 @@
 module github.com/EGjaedong/go-tiny-claw
 
-go 1.26.5
+go 1.26.0

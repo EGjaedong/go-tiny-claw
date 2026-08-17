@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "go",
+      "name": "Go: Claw",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/go/cmd/claw",
+      "cwd": "${workspaceFolder}/go"
+    },
+    {
+      "type": "java",
+      "name": "Java: Claw",
+      "request": "launch",
+      "mainClass": "com.egjaedong.tinyclaw.Claw",
+      "projectName": "tiny-claw",
+      "cwd": "${workspaceFolder}/java",
+      "classPaths": [
+        "${workspaceFolder}/java/bin",
+        "${workspaceFolder}/java/build/classes/java/main"
+      ],
+      "modulePaths": [],
+      "preLaunchTask": "gradle compileJava"
+    }
+  ]
+}

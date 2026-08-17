@@ -1,0 +1,9 @@
+{
+  "java.import.gradle.enabled": true,
+  "java.import.gradle.wrapper.enabled": true,
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.jdt.ls.java.home": "/opt/homebrew/opt/openjdk",
+  "java.import.gradle.java.home": "/opt/homebrew/opt/openjdk",
+  "java.project.sourcePaths": ["java/src/main/java"],
+  "java.project.outputPath": "java/bin"
+}

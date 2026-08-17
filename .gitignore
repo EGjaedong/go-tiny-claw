@@ -1,0 +1,14 @@
+# Go
+go/bin/
+
+# Java / Gradle
+java/.gradle/
+java/build/
+java/bin/
+java/target/
+*.class
+
+# IDE
+.idea/
+*.iml
+.DS_Store
