@@ -2,6 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "java",
+      "name": "Claw",
+      "request": "launch",
+      "mainClass": "com.egjaedong.tinyclaw.Claw",
+      "projectName": "java"
+    },
+    {
       "type": "go",
       "name": "Go: Claw",
       "request": "launch",
@@ -15,9 +22,8 @@
       "request": "launch",
       "mainClass": "com.egjaedong.tinyclaw.Claw",
       "projectName": "tiny-claw",
-      "cwd": "${workspaceFolder}/java",
+      "cwd": "${workspaceFolder}",
       "classPaths": [
-        "${workspaceFolder}/java/bin",
         "${workspaceFolder}/java/build/classes/java/main"
       ],
       "modulePaths": [],

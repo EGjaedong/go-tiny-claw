@@ -1,9 +1,18 @@
 {
+  // 必须走 java/ 的 Gradle 工程导入。不要设 java.project.sourcePaths / outputPath，
+  // 否则会变成没有 JRE 的 unmanaged 工程，Lombok 生成的构造器会报 Object() undefined。
   "java.import.gradle.enabled": true,
   "java.import.gradle.wrapper.enabled": true,
+  "java.import.maven.enabled": false,
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.jdt.ls.java.home": "/opt/homebrew/opt/openjdk",
   "java.import.gradle.java.home": "/opt/homebrew/opt/openjdk",
-  "java.project.sourcePaths": ["java/src/main/java"],
-  "java.project.outputPath": "java/bin"
+  "java.jdt.ls.lombokSupport.enabled": true,
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-21",
+      "path": "/opt/homebrew/opt/openjdk",
+      "default": true
+    }
+  ]
 }

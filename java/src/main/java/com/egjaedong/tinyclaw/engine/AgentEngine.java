@@ -6,7 +6,9 @@ import java.util.List;
 import com.egjaedong.tinyclaw.provider.LlmProvider;
 import com.egjaedong.tinyclaw.schema.Message;
 import com.egjaedong.tinyclaw.schema.Role;
+import com.egjaedong.tinyclaw.schema.ToolCall;
 import com.egjaedong.tinyclaw.schema.ToolDefinition;
+import com.egjaedong.tinyclaw.schema.ToolResult;
 import com.egjaedong.tinyclaw.tools.Registry;
 
 import lombok.AllArgsConstructor;
@@ -59,10 +61,10 @@ public final class AgentEngine {
 
                 // 核心机制：传入的 availableTools 为 null!
                 // 大模型看不到任何 JSON Schema，被迫只能输出纯文本的思考过程
-                Message message = llmProvider.generate(contextHistory, null);
-                if (message.getContent() != null) {
-                    System.out.println("[Engine][Phase 1] 思考过程: " + message.getContent());
-                    contextHistory.add(message);
+                Message thinkResponse = llmProvider.generate(contextHistory, null);
+                if (thinkResponse.getContent() != null) {
+                    System.out.println("🧠 [内部思考 Trace]: " + thinkResponse.getContent());
+                    contextHistory.add(thinkResponse);
                 }
             }
 
@@ -71,10 +73,40 @@ public final class AgentEngine {
 
             // 此时的 contextHistory 中已经包含了上一阶段模型自己的 Thinking Trace.
             // 模型会顺着自己的逻辑，结合恢复的 availableTools 发起精准的工具调用
-            Message message = llmProvider.generate(contextHistory, availableTools);
-            if (message.getContent() != null) {
-                System.out.println("[Engine][Phase 2] 行动结果: " + message.getContent());
+            Message actionResponse = llmProvider.generate(contextHistory, availableTools);
+            if (actionResponse.getContent() != null) {
+                System.out.println("🤖 [对外回复]: " + actionResponse.getContent());
+            }
+
+            contextHistory.add(actionResponse);
+
+            // 3. 退出条件判断
+            // 如果模型么有请求任何工具调用，说明它认为任务已经完成，跳出循环
+            if (actionResponse.getToolCalls() == null || actionResponse.getToolCalls().isEmpty()) {
+                System.out.println("[Engine] 模型未请求调用工具，任务宣告完成。");
+                break;
+            }
+
+            // 4. 执行行动 （Action） 与 获取观察结果 （Observation）
+            System.out.println(String.format("[Engine] 模型请求调用 %d 个工具...", actionResponse.getToolCalls().size()));
+
+            for (ToolCall toolCall : actionResponse.getToolCalls()) {
+                System.out.println(String.format("-> 🛠️ 执行工具: %s, 参数: %s", toolCall.getName(), toolCall.getArguments()));
+
+                ToolResult result = registry.execute(toolCall);
+                if (result.isError()) {
+                    System.out.println(String.format(" -> ❌ 工具执行报错: %s", result.getOutput()));
+                } else {
+                    System.out.println(String.format(" -> ✅ 工具执行成功（返回 %d 字节）", result.getOutput().length()));
+                }
+
+                // 将工具执行的观察结果（Observation）封装为 User Message 追加到上下文中
+                // 注意： ToolCallID 必须携带！这是维系大模型推理链条的关键
+                Message observationMsg = new Message(Role.USER, result.getOutput(), null, toolCall.getId());
+                contextHistory.add(observationMsg);
             }
         } while (true);
+
+        // 循环回到开头，模型将带着新加入的 Observation 继续它的下一轮思考...
     }
 }
