@@ -14,3 +14,16 @@ java {
 application {
     mainClass = "com.egjaedong.tinyclaw.Claw"
 }
+
+repositories {
+    mavenCentral()
+}
+
+val lombok = "org.projectlombok:lombok:1.18.46"
+
+dependencies {
+    compileOnly(lombok)
+    annotationProcessor(lombok)
+    testCompileOnly(lombok)
+    testAnnotationProcessor(lombok)
+}

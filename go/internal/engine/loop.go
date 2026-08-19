@@ -34,7 +34,7 @@ func (e *AgentEngine) Run(ctx context.Context, userPrompt string) error {
 	log.Printf("[Engine] 引擎启动，锁定工作区: %s\n", e.WorkDir)
 	log.Printf("[Engine] 思考模式 (Thinking Phase): %v\n", e.EnableThinking)
 
-	// 1. 初始化绘画的 Context
+	// 1. 初始化会话的 Context
 	// 在真实的场景中，这里会由动态 Prompt 组装器加载 AGENTS.md。目前先硬编码
 	contextHistory := []schema.Message{
 		{
