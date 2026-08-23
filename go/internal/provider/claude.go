@@ -14,7 +14,7 @@ import (
 
 type ClaudeProvider struct {
 	client anthropic.Client
-	model string
+	model  string
 }
 
 func NewDashscopeCluadeProvider(model string) *ClaudeProvider {
@@ -29,7 +29,7 @@ func NewDashscopeCluadeProvider(model string) *ClaudeProvider {
 	apiHost := os.Getenv("DASHSCOPE_ANTHROPIC_HOST")
 	return &ClaudeProvider{
 		client: anthropic.NewClient(option.WithAPIKey(apiKey), option.WithBaseURL(apiHost)),
-		model: model,
+		model:  model,
 	}
 }
 
@@ -64,8 +64,8 @@ func (provider *ClaudeProvider) Generate(ctx context.Context, messages []schema.
 				_ = json.Unmarshal(toolCall.Arguments, &inputMap)
 				blocks = append(blocks, anthropic.ContentBlockParamUnion{
 					OfToolUse: &anthropic.ToolUseBlockParam{
-						ID: toolCall.ID,
-						Name: toolCall.Name,
+						ID:    toolCall.ID,
+						Name:  toolCall.Name,
 						Input: inputMap,
 					},
 				})
@@ -83,8 +83,8 @@ func (provider *ClaudeProvider) Generate(ctx context.Context, messages []schema.
 		var properties map[string]any
 		var required []string
 
-		if m, ok := toolDef.InputSchema.(map[string]interface{}); ok {
-			if p, ok := m["properties"].(map[string]interface{}); ok {
+		if m, ok := toolDef.InputSchema.(map[string]any); ok {
+			if p, ok := m["properties"].(map[string]any); ok {
 				properties = p
 			}
 			if r, ok := m["required"].([]string); ok {
@@ -92,12 +92,12 @@ func (provider *ClaudeProvider) Generate(ctx context.Context, messages []schema.
 			}
 		}
 
-		toolParam := anthropic.ToolParam {
-			Name: toolDef.Name,
+		toolParam := anthropic.ToolParam{
+			Name:        toolDef.Name,
 			Description: anthropic.String(toolDef.Description),
 			InputSchema: anthropic.ToolInputSchemaParam{
 				Properties: properties,
-				Required: required,
+				Required:   required,
 			},
 		}
 		anthropicTools = append(anthropicTools, anthropic.ToolUnionParam{OfTool: &toolParam})
@@ -105,9 +105,9 @@ func (provider *ClaudeProvider) Generate(ctx context.Context, messages []schema.
 
 	// 3. 构建请求并发送
 	params := anthropic.MessageNewParams{
-		Model: anthropic.Model(provider.model),
+		Model:     anthropic.Model(provider.model),
 		MaxTokens: 4096,
-		Messages: anthropicMessages,
+		Messages:  anthropicMessages,
 	}
 
 	if systemPrompt != "" {
