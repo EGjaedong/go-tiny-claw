@@ -7,74 +7,69 @@ import (
 	"os"
 
 	"github.com/EGjaedong/go-tiny-claw/internal/engine"
+	"github.com/EGjaedong/go-tiny-claw/internal/provider"
 	"github.com/EGjaedong/go-tiny-claw/internal/schema"
+	"github.com/EGjaedong/go-tiny-claw/internal/util"
 )
 
-// 1. Mock 大模型的 Provider
-type mockProvider struct {
-	turn int
-}
-
-// 模拟大模型的响应：第一轮请求执行 bash，第二轮输出最终结果
-func (m *mockProvider) Generate(ctx context.Context, msgs []schema.Message, tools []schema.ToolDefinition) (*schema.Message, error) {
-	// 如果工具列表为空，说明这是引擎发起的 Phase 1: Thinking 阶段
-	if len(tools) == 0 {
-		return &schema.Message{
-			Role:    schema.RoleAssistant,
-			Content: "【推理中】目标是检查文件。我不能直接盲猜，我需要先调用 bash 工具执行 ls 命令，看看当前目录下有什么，然后再做定夺。",
-		}, nil
-	}
-
-	// 如果工具列表不为空，这说明是 Pahse 2: Action 阶段
-	m.turn++
-	if m.turn == 1 {
-		// 第一轮 Action: 顺着刚才的 Thinking，精准调用工具
-		return &schema.Message{
-			Role:    schema.RoleAssistant,
-			Content: "我要执行我刚才计划的步骤了。",
-			ToolCalls: []schema.ToolCall{
-				{ID: "call_123", Name: "bash", Arguments: []byte(`"command": "ls -la"`)},
-			},
-		}, nil
-	}
-
-	// 第二轮 Action：直接总结退出
-	return &schema.Message{
-		Role:    schema.RoleAssistant,
-		Content: "根据工具返回的结果，我看到了 main.go，任务圆满完成！",
-	}, nil
-}
-
-// 2. Mock Tool Registry
+// 伪造的工具注册表 (用于测试 Provider 的工具提取能力)
 type mockRegistry struct{}
 
-func (m *mockRegistry) GetAvailableTools() []schema.ToolDefinition {
-	// 为了让 Phase 2 能检测到工具，这里返回一个伪造的工具定义数组
-	return []schema.ToolDefinition{{Name: "bash"}}
+func (registry *mockRegistry) GetAvailableTools() []schema.ToolDefinition {
+	return []schema.ToolDefinition{
+		{
+			Name: "get_weather",
+			Description: "获取制定城市的当前天气情况。",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"city": map[string]interface{}{
+						"type": "string",
+					},
+				},
+				"required": []string{"city"},
+			},
+		},
+	}
 }
 
-func (m *mockRegistry) Execute(ctx context.Context, call schema.ToolCall) schema.ToolResult {
-	// 直接返回一段伪造的终端输出
+func (registory *mockRegistry) Execute(ctx context.Context, call schema.ToolCall) schema.ToolResult {
+	log.Printf("  -> [Mock 工具执行] 获取 %s 的天气中...\n", call.Name)
 	return schema.ToolResult{
 		ToolCallID: call.ID,
-		Output:     "-rw-r--r-- 1 user group 234 Oct 24 10:00 main.go\n",
-		IsError:    false,
+		Output: "API 返回：今天是晴天，气温 25 度。",
+		IsError: false,
 	}
 }
 
 // 3. 组装运行
 func main() {
+	// 确保能读取到 ENV
+	util.LoadDotEnv()
+
+	if os.Getenv("DASHSCOPE_API_KEY") == "" {
+		log.Fatal("环境变量加载失败")
+	}
+
 	// 获取当前执行目录作为 WorkDir 物理边界
 	workDir, _ := os.Getwd()
 
-	p := &mockProvider{}
-	r := &mockRegistry{}
+	// 1.初始化真实的 Provider
+	// 可以切换不同的 Provider 试试，当然当前只有 openai 和 A畜 的两种
+	// llmProvider := provider.NewDashscopeOpenAIProvider("qwen3.8-max")
+	llmProvider := provider.NewDashscopeCluadeProvider("qwen3.8-max")
 
-	// 实例化核心引擎，开始 EnableThinking = true
-	eng := engine.NewAgentEngine(p, r, workDir, true)
+	// 2. 注入伪造的工具列表
+	registry := &mockRegistry{}
+
+	// 3. 实例化核心引擎，开始 EnableThinking = true
+	eng := engine.NewAgentEngine(llmProvider, registry, workDir, false)
+
+	// 设定测试任务
+	prompt := "我想在西安跑步，帮我查查天气合适吗？"
 
 	// 发起任务指令
-	err := eng.Run(context.Background(), "帮我检查当前目录的文件")
+	err := eng.Run(context.Background(), prompt)
 	if err != nil {
 		log.Fatalf("引擎运行崩溃: %v", err)
 	}

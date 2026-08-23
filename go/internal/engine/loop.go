@@ -20,19 +20,19 @@ type AgentEngine struct {
 	EnableThinking bool
 }
 
-func NewAgentEngine(p provider.LLMProvider, r tools.Registry, workDir string, enableThinking bool) *AgentEngine {
+func NewAgentEngine(provider provider.LLMProvider, registry tools.Registry, workDir string, enableThinking bool) *AgentEngine {
 	return &AgentEngine{
-		provider: p,
-		registry: r,
+		provider: provider,
+		registry: registry,
 		WorkDir:  workDir,
 		EnableThinking: enableThinking,
 	}
 }
 
 // Run 启动 Agent 的生命周期
-func (e *AgentEngine) Run(ctx context.Context, userPrompt string) error {
-	log.Printf("[Engine] 引擎启动，锁定工作区: %s\n", e.WorkDir)
-	log.Printf("[Engine] 思考模式 (Thinking Phase): %v\n", e.EnableThinking)
+func (agent *AgentEngine) Run(ctx context.Context, userPrompt string) error {
+	log.Printf("[Engine] 引擎启动，锁定工作区: %s\n", agent.WorkDir)
+	log.Printf("[Engine] 思考模式 (Thinking Phase): %v\n", agent.EnableThinking)
 
 	// 1. 初始化会话的 Context
 	// 在真实的场景中，这里会由动态 Prompt 组装器加载 AGENTS.md。目前先硬编码
@@ -55,15 +55,15 @@ func (e *AgentEngine) Run(ctx context.Context, userPrompt string) error {
 		log.Printf("======= [Turn %d] 开始 =======\n", turnCount)
 
 		// 获取当前挂载的所有工具定义
-		availableTools := e.registry.GetAvailableTools()
+		availableTools := agent.registry.GetAvailableTools()
 
 		// Phase 1: 思考阶段 (Thinking Phase) - 剥夺工具，强制规划
-		if e.EnableThinking {
+		if agent.EnableThinking {
 			log.Println("[Engine][Phase 1] 剥夺工具访问权，强制进入思考与规划阶段...")
 
 			// 核心机制：传入的 availableTools 为 nil!
 			// 大模型看不到任何 JSON Schema，被迫只能输出纯文本的思考过程
-			thinkResp, err := e.provider.Generate(ctx, contextHistory, nil)
+			thinkResp, err := agent.provider.Generate(ctx, contextHistory, nil)
 			if err != nil {
 				return fmt.Errorf("Thinking 阶段生成失败: %w", err)
 			}
@@ -80,7 +80,7 @@ func (e *AgentEngine) Run(ctx context.Context, userPrompt string) error {
 
 		// 此时的 contextHistory 中已经包含了上一阶段模型自己的 Thinking Trace.
 		// 模型会顺着自己的逻辑，结合恢复的 availableTools 发起精准的工具调用
-		actionResp, err := e.provider.Generate(ctx, contextHistory, availableTools)
+		actionResp, err := agent.provider.Generate(ctx, contextHistory, availableTools)
 		if err != nil {
 			return fmt.Errorf("Action 阶段生成失败: %w", err)
 		}
@@ -105,7 +105,7 @@ func (e *AgentEngine) Run(ctx context.Context, userPrompt string) error {
 			log.Printf("-> 🛠️ 执行工具: %s, 参数: %s\n", toolCall.Name, string(toolCall.Arguments))
 
 			// 通过 Registry 路由并执行底层工具
-			result := e.registry.Execute(ctx, toolCall)
+			result := agent.registry.Execute(ctx, toolCall)
 
 			if result.IsError {
 				log.Printf(" -> ❌ 工具执行报错: %s\n", result.Output)
