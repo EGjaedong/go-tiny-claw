@@ -60,7 +60,7 @@ func (provider *ClaudeProvider) Generate(ctx context.Context, messages []schema.
 
 			// 将历史工具调用传回 Claude 特有的 ToolUseBlockParam
 			for _, toolCall := range msg.ToolCalls {
-				var inputMap map[string]interface{}
+				var inputMap map[string]any
 				_ = json.Unmarshal(toolCall.Arguments, &inputMap)
 				blocks = append(blocks, anthropic.ContentBlockParamUnion{
 					OfToolUse: &anthropic.ToolUseBlockParam{
