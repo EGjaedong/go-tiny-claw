@@ -1,6 +1,5 @@
 package com.egjaedong.tinyclaw.tools;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.egjaedong.tinyclaw.schema.ToolCall;
@@ -13,13 +12,24 @@ public class MockRegistry implements Registry {
 
     @Override
     public List<ToolDefinition> getAvailableTools() {
-        List<ToolDefinition> tools = new ArrayList<>();
-        tools.add(new ToolDefinition("bash", null,  null));
-        return tools;
+        // 对照 go/cmd/claw/main.go：挂一份 JSON Schema 给模型看
+        return List.of(new ToolDefinition(
+                "get_weather",
+                "获取制定城市的当前天气情况。",
+                """
+                {
+                  "type": "object",
+                  "properties": {
+                    "city": { "type": "string" }
+                  },
+                  "required": ["city"]
+                }
+                """
+        ));
     }
 
     @Override
     public ToolResult execute(ToolCall toolCall) {
-        return new ToolResult(toolCall.getId(), "-rw-r--r-- 1 user group 234 Oct 24 10:00 main.go\n", false);
+        return new ToolResult(toolCall.getId(), "API 返回：今天是晴天，气温 25 度。", false);
     }
 }
