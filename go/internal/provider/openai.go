@@ -18,7 +18,7 @@ type OpenAIProvider struct {
 	model  string
 }
 
-// NewDashscopeAIProvider 构造函数：基于 OpenAI V3 SDK，指向 DeepSeek 底座
+// NewDashscopeAIProvider 构造函数：基于 OpenAI V3 SDK，指向 Dashscope 底座
 func NewDashscopeOpenAIProvider(model string) *OpenAIProvider {
 	util.LoadDotEnv()
 

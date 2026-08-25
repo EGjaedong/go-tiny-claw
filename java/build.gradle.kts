@@ -26,4 +26,5 @@ dependencies {
     annotationProcessor(lombok)
     testCompileOnly(lombok)
     testAnnotationProcessor(lombok)
+    implementation("com.openai:openai-java:4.52.0")
 }
