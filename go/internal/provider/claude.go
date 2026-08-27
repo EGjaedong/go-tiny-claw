@@ -17,7 +17,7 @@ type ClaudeProvider struct {
 	model  string
 }
 
-func NewDashscopeCluadeProvider(model string) *ClaudeProvider {
+func NewDashscopeClaudeProvider(model string) *ClaudeProvider {
 	util.LoadDotEnv()
 
 	apiKey := os.Getenv("DASHSCOPE_API_KEY")
@@ -33,7 +33,7 @@ func NewDashscopeCluadeProvider(model string) *ClaudeProvider {
 	}
 }
 
-func (provider *ClaudeProvider) Generate(ctx context.Context, messages []schema.Message, avaiableTooles []schema.ToolDefinition) (*schema.Message, error) {
+func (provider *ClaudeProvider) Generate(ctx context.Context, messages []schema.Message, availableTools []schema.ToolDefinition) (*schema.Message, error) {
 	var anthropicMessages []anthropic.MessageParam
 	var systemPrompt string
 
@@ -78,7 +78,7 @@ func (provider *ClaudeProvider) Generate(ctx context.Context, messages []schema.
 
 	// 2. 工具 Schema 翻译
 	var anthropicTools []anthropic.ToolUnionParam
-	for _, toolDef := range avaiableTooles {
+	for _, toolDef := range availableTools {
 		// ToolInputSchemaParam 是结构体，需要通过 Properties 字段精准填充
 		var properties map[string]any
 		var required []string

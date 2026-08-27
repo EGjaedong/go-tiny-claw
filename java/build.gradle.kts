@@ -27,4 +27,5 @@ dependencies {
     testCompileOnly(lombok)
     testAnnotationProcessor(lombok)
     implementation("com.openai:openai-java:4.52.0")
+    implementation("com.anthropic:anthropic-java:2.57.0")
 }

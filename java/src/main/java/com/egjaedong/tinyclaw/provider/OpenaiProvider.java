@@ -61,15 +61,14 @@ public class OpenaiProvider implements LlmProvider {
                         // 如果是工具调用的响应，则在用户消息中附加 toolCallId
                         params.addMessage(ChatCompletionToolMessageParam.builder()
                                 .toolCallId(message.getToolCallId()).content(message.getContent())
-                                .build()
-                        );
+                                .build());
                     } else {
                         params.addUserMessage(message.getContent());
                     }
                 }
                 case Role.ASSISTANT -> {
-                    ChatCompletionAssistantMessageParam.Builder assistantParams
-                            = ChatCompletionAssistantMessageParam.builder();
+                    ChatCompletionAssistantMessageParam.Builder assistantParams = ChatCompletionAssistantMessageParam
+                            .builder();
                     if (message.getContent() != null && !message.getContent().isEmpty()) {
                         assistantParams.content(message.getContent());
                     }
@@ -104,12 +103,11 @@ public class OpenaiProvider implements LlmProvider {
                         raw = jsonMapper().readValue(
                                 toolDef.getInputSchema(),
                                 new TypeReference<Map<String, Object>>() {
-                        });
+                                });
                     } catch (JsonProcessingException e) {
                         throw new IllegalArgumentException("工具 schema 不是合法 JSON: " + toolDef.getName(), e);
                     }
-                    raw.forEach((key, value)
-                            -> schema.putAdditionalProperty(key, JsonValue.from(value)));
+                    raw.forEach((key, value) -> schema.putAdditionalProperty(key, JsonValue.from(value)));
                 }
 
                 var function = FunctionDefinition.builder()
@@ -130,7 +128,7 @@ public class OpenaiProvider implements LlmProvider {
             throw new IllegalStateException("API 返回了空的 Choices");
         }
 
-        // 4. 反向翻译为内部 shcema.Message
+        // 4. 反向翻译为内部 schema.Message
         var choice = response.choices().get(0).message();
         var result = new Message();
         result.setRole(Role.ASSISTANT);
@@ -141,10 +139,9 @@ public class OpenaiProvider implements LlmProvider {
             if (toolCall.isFunction()) {
                 var function = toolCall.asFunction();
                 toolCalls.add(new ToolCall(
-                    function.id(),
-                    function.function().name(),
-                    function.function().arguments()
-                ));
+                        function.id(),
+                        function.function().name(),
+                        function.function().arguments()));
             }
         });
         result.setToolCalls(toolCalls);

@@ -18,7 +18,7 @@ type OpenAIProvider struct {
 	model  string
 }
 
-// NewDashscopeAIProvider 构造函数：基于 OpenAI V3 SDK，指向 Dashscope 底座
+// NewDashscopeOpenAIProvider 构造函数：基于 OpenAI V3 SDK，指向 Dashscope 底座
 func NewDashscopeOpenAIProvider(model string) *OpenAIProvider {
 	util.LoadDotEnv()
 
@@ -28,7 +28,7 @@ func NewDashscopeOpenAIProvider(model string) *OpenAIProvider {
 	}
 
 	// 核心：将官方 SDK 的地址替换为目标的兼容HOST
-	apiHost := os.Getenv("DASHSCOPE_API_HOST")
+	apiHost := os.Getenv("DASHSCOPE_OPENAI_HOST")
 
 	return &OpenAIProvider{
 		client: openai.NewClient(option.WithAPIKey(apiKey), option.WithBaseURL(apiHost)),
