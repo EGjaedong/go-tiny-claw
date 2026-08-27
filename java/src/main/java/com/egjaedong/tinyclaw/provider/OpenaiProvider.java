@@ -103,7 +103,7 @@ public class OpenaiProvider implements LlmProvider {
                         raw = jsonMapper().readValue(
                                 toolDef.getInputSchema(),
                                 new TypeReference<Map<String, Object>>() {
-                                });
+                        });
                     } catch (JsonProcessingException e) {
                         throw new IllegalArgumentException("工具 schema 不是合法 JSON: " + toolDef.getName(), e);
                     }

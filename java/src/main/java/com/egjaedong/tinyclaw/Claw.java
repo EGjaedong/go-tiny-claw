@@ -3,8 +3,8 @@ package com.egjaedong.tinyclaw;
 import java.nio.file.Path;
 
 import com.egjaedong.tinyclaw.engine.AgentEngine;
+import com.egjaedong.tinyclaw.provider.AnthropicProvider;
 import com.egjaedong.tinyclaw.provider.LlmProvider;
-import com.egjaedong.tinyclaw.provider.OpenaiProvider;
 import com.egjaedong.tinyclaw.tools.MockRegistry;
 import com.egjaedong.tinyclaw.tools.Registry;
 
@@ -18,9 +18,9 @@ public final class Claw {
     public static void main(String[] args) {
         // 对照 os.Getwd()：进程 cwd，不是 jar 所在目录，也不是 git 根
         String workDir = Path.of("").toAbsolutePath().normalize().toString();
-        LlmProvider llmProvider = new OpenaiProvider("qwen3.8-max");
+        LlmProvider llmProvider = new AnthropicProvider("qwen3.8-max");
         Registry registry = new MockRegistry();
-        AgentEngine agentEngine = new AgentEngine(llmProvider, registry, workDir, true);
+        AgentEngine agentEngine = new AgentEngine(llmProvider, registry, workDir, false);
         agentEngine.run("我想在西安跑步，帮我查查天气合适吗？");
         System.out.println("任务完成！");
     }
