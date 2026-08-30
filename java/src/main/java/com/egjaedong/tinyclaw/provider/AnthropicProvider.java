@@ -115,7 +115,9 @@ public class AnthropicProvider implements LlmProvider {
                             toolDef.getInputSchema(),
                             new TypeReference<Map<String, Object>>() {
                             });
+                    @SuppressWarnings("unchecked")
                     Map<String, Object> props = (Map<String, Object>) raw.getOrDefault("properties", Map.of());
+                    @SuppressWarnings("unchecked")
                     List<String> required = (List<String>) raw.getOrDefault("required", List.of());
 
                     var properties = BetaTool.InputSchema.Properties.builder();
@@ -130,10 +132,8 @@ public class AnthropicProvider implements LlmProvider {
                                                     .properties(properties.build()).required(required).build())
                                     .build());
                 } catch (JsonMappingException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 } catch (JsonProcessingException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
