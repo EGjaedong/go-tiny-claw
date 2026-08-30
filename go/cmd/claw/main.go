@@ -9,6 +9,7 @@ import (
 	"github.com/EGjaedong/go-tiny-claw/internal/engine"
 	"github.com/EGjaedong/go-tiny-claw/internal/provider"
 	"github.com/EGjaedong/go-tiny-claw/internal/schema"
+	"github.com/EGjaedong/go-tiny-claw/internal/tools"
 	"github.com/EGjaedong/go-tiny-claw/internal/util"
 )
 
@@ -56,17 +57,21 @@ func main() {
 
 	// 1.初始化真实的 Provider
 	// 可以切换不同的 Provider 试试，当然当前只有 openai 和 A畜 的两种
-	// llmProvider := provider.NewDashscopeOpenAIProvider("qwen3.8-max")
-	llmProvider := provider.NewDashscopeClaudeProvider("qwen3.8-max")
+	llmProvider := provider.NewDashscopeOpenAIProvider("qwen3.8-max")
+	// llmProvider := provider.NewDashscopeClaudeProvider("qwen3.8-max")
 
 	// 2. 注入伪造的工具列表
-	registry := &mockRegistry{}
+	registry := tools.NewRegistry()
 
-	// 3. 实例化核心引擎，开始 EnableThinking = true
+	// 3. 将真实的 ReadFile 工具挂载到注册表中
+	readFileTool := tools.NewReadFileTool(workDir)
+	registry.Register(readFileTool)
+
+	// 4. 实例化核心引擎，任务简单，关闭 thinking
 	eng := engine.NewAgentEngine(llmProvider, registry, workDir, false)
 
 	// 设定测试任务
-	prompt := "我想在西安跑步，帮我查查天气合适吗？"
+	prompt := "请调用工具读取一下当前工作区目录下 hello.txt 文件的内容，并用一句话向我总结它说了什么。"
 
 	// 发起任务指令
 	err := eng.Run(context.Background(), prompt)
