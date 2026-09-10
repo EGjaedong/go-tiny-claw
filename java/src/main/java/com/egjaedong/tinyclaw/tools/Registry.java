@@ -11,6 +11,8 @@ import com.egjaedong.tinyclaw.schema.ToolResult;
  */
 public interface Registry {
 
+    void register(BaseTool tool);
+
     List<ToolDefinition> getAvailableTools();
 
     ToolResult execute(ToolCall toolCall);

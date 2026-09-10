@@ -8,40 +8,9 @@ import (
 
 	"github.com/EGjaedong/go-tiny-claw/internal/engine"
 	"github.com/EGjaedong/go-tiny-claw/internal/provider"
-	"github.com/EGjaedong/go-tiny-claw/internal/schema"
 	"github.com/EGjaedong/go-tiny-claw/internal/tools"
 	"github.com/EGjaedong/go-tiny-claw/internal/util"
 )
-
-// 伪造的工具注册表 (用于测试 Provider 的工具提取能力)
-type mockRegistry struct{}
-
-func (registry *mockRegistry) GetAvailableTools() []schema.ToolDefinition {
-	return []schema.ToolDefinition{
-		{
-			Name: "get_weather",
-			Description: "获取制定城市的当前天气情况。",
-			InputSchema: map[string]interface{}{
-				"type": "object",
-				"properties": map[string]interface{}{
-					"city": map[string]interface{}{
-						"type": "string",
-					},
-				},
-				"required": []string{"city"},
-			},
-		},
-	}
-}
-
-func (registry *mockRegistry) Execute(ctx context.Context, call schema.ToolCall) schema.ToolResult {
-	log.Printf("  -> [Mock 工具执行] 获取 %s 的天气中...\n", call.Name)
-	return schema.ToolResult{
-		ToolCallID: call.ID,
-		Output: "API 返回：今天是晴天，气温 25 度。",
-		IsError: false,
-	}
-}
 
 // 3. 组装运行
 func main() {

@@ -36,7 +36,7 @@ func (t *ReadFileTool) Defination() schema.ToolDefinition {
 			"properties": map[string]interface{}{
 				"path": map[string]interface{}{
 					"type": "string",
-					"description": "要读取的文件路行，如 cmd/claw/main.go",
+					"description": "要读取的文件路径，如 cmd/claw/main.go",
 				},
 			},
 			"required": []string{"path"},
@@ -77,7 +77,7 @@ func (t *ReadFileTool) Execute(ctx context.Context, args json.RawMessage) (strin
 	// 我们在工具内部直接进行物理截断
 	const maxLen = 8000
 	if len(content) > maxLen {
-		truncatedMsg := fmt.Sprintf("%s\n\n...[由于内容过长，已被系统阶段至前 %d 字节...]", string(content[:maxLen]), maxLen)
+		truncatedMsg := fmt.Sprintf("%s\n\n...[由于内容过长，已被系统截断至前 %d 字节...]", string(content[:maxLen]), maxLen)
 		return truncatedMsg, nil
 	}
 

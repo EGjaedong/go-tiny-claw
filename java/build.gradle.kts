@@ -28,4 +28,5 @@ dependencies {
     testAnnotationProcessor(lombok)
     implementation("com.openai:openai-java:4.52.0")
     implementation("com.anthropic:anthropic-java:2.57.0")
+    implementation("org.apache.commons:commons-lang3:3.20.0")
 }
