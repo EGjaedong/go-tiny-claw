@@ -26,7 +26,7 @@ func main() {
 
 	// 1.初始化真实的 Provider
 	// 可以切换不同的 Provider 试试，当然当前只有 openai 和 A畜 的两种
-	llmProvider := provider.NewDashscopeOpenAIProvider("qwen3.8-max")
+	llmProvider := provider.NewDashscopeOpenAIProvider("deepseek-flash")
 	// llmProvider := provider.NewDashscopeClaudeProvider("qwen3.8-max")
 
 	// 2. 注入伪造的工具列表

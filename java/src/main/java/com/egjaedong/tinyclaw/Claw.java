@@ -19,7 +19,7 @@ public final class Claw {
     public static void main(String[] args) {
         // 对照 os.Getwd()：进程 cwd，不是 jar 所在目录，也不是 git 根
         String workDir = Path.of("").toAbsolutePath().normalize().toString();
-        LlmProvider llmProvider = new OpenaiProvider("qwen3.8-max");
+        LlmProvider llmProvider = new OpenaiProvider("deepseek-flash");
         Registry registry = new RegistryImpl();
         registry.register(new ReadFileTool(workDir));
         AgentEngine agentEngine = new AgentEngine(llmProvider, registry, workDir, false);

@@ -31,13 +31,13 @@ public class OpenaiProvider implements LlmProvider {
     public OpenaiProvider(String model) {
         Env.loadDotEnv();
 
-        String apiKey = Env.get("DASHSCOPE_API_KEY");
+        String apiKey = Env.get("DEEPSEEK_API_KEY");
         if (apiKey.isEmpty()) {
-            throw new IllegalStateException("请设置 DASHSCOPE_API_KEY 环境变量");
+            throw new IllegalStateException("请设置 DEEPSEEK_API_KEY 环境变量");
         }
 
         // 核心：将官方 SDK 的地址替换为 DashScope 兼容 HOST
-        String apiHost = Env.get("DASHSCOPE_OPENAI_HOST");
+        String apiHost = Env.get("DEEPSEEK_API_HOST");
 
         this.client = OpenAIOkHttpClient.builder()
                 .apiKey(apiKey)

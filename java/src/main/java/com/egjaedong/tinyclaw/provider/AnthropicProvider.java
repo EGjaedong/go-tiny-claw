@@ -30,12 +30,12 @@ public class AnthropicProvider implements LlmProvider {
     public AnthropicProvider(String model) {
         Env.loadDotEnv();
 
-        String apiKey = Env.get("DASHSCOPE_API_KEY");
+        String apiKey = Env.get("DEEPSEEK_API_KEY");
         if (apiKey.isBlank()) {
-            throw new IllegalStateException("请设置 DASHSCOPE_API_KEY 环境变量");
+            throw new IllegalStateException("请设置 DEEPSEEK_API_KEY 环境变量");
         }
 
-        String apiHost = Env.get("DASHSCOPE_ANTHROPIC_HOST");
+        String apiHost = Env.get("DEEPSEEK_API_HOST");
 
         this.client = AnthropicOkHttpClient.builder()
                 .apiKey(apiKey)

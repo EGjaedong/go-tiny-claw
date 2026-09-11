@@ -20,13 +20,13 @@ type ClaudeProvider struct {
 func NewDashscopeClaudeProvider(model string) *ClaudeProvider {
 	util.LoadDotEnv()
 
-	apiKey := os.Getenv("DASHSCOPE_API_KEY")
+	apiKey := os.Getenv("DEEPSEEK_API_KEY")
 	if apiKey == "" {
-		panic("请设置 DASHSCOPE_API_KEY 环境变量")
+		panic("请设置 DEEPSEEK_API_KEY 环境变量")
 	}
 
 	// 核心：将官方 SDK 的地址替换为目标的兼容HOST
-	apiHost := os.Getenv("DASHSCOPE_ANTHROPIC_HOST")
+	apiHost := os.Getenv("DEEPSEEK_API_HOST")
 	return &ClaudeProvider{
 		client: anthropic.NewClient(option.WithAPIKey(apiKey), option.WithBaseURL(apiHost)),
 		model:  model,
