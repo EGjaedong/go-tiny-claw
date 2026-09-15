@@ -26,7 +26,7 @@ func (t *ReadFileTool) Name() string {
 }
 
 // Definition 向大模型清晰地描述这个工具的用途和使参数格式
-func (t *ReadFileTool) Defination() schema.ToolDefinition {
+func (t *ReadFileTool) Definition() schema.ToolDefinition {
 	return schema.ToolDefinition{
 		Name: t.Name(),
 		Description: "读取指定路径的文件内容。请提供相对工作区的路径。",

@@ -14,8 +14,8 @@ type BaseTool interface {
 	// Name 返回工具的全局唯一名称（大模型通过这个名字掉用它）
 	Name() string
 
-	// Defination 返回用于提交给大模型的工具元信息和参数 JSON Schema
-	Defination() schema.ToolDefinition
+	// Definition 返回用于提交给大模型的工具元信息和参数 JSON Schema
+	Definition() schema.ToolDefinition
 
 	// Execute 接收大模型吐出的 JSON 参数，执行具体业务逻辑
 	// 注意：参数是 json.RawMessage，反序列化由各工具内部自行处理
@@ -58,7 +58,7 @@ func (r *registryImpl) Register(tool BaseTool) {
 func (r *registryImpl) GetAvailableTools() []schema.ToolDefinition {
 	var defs []schema.ToolDefinition
 	for _, tool := range r.tools {
-		defs = append(defs, tool.Defination())
+		defs = append(defs, tool.Definition())
 	}
 	return defs
 }

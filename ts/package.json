@@ -1,0 +1,25 @@
+{
+  "name": "tiny-claw",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "TypeScript 实现的 tiny-claw（对照 go/ 教程，自行填写）",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "tsx src/claw.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.125.0",
+    "dotenv": "^17.4.2",
+    "openai": "^7.15.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2",
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.3"
+  }
+}
+

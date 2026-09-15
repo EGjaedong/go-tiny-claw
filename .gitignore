@@ -8,6 +8,17 @@ java/bin/
 java/target/
 *.class
 
+# TypeScript / Node
+ts/node_modules/
+ts/dist/
+
+# Python
+python/.venv/
+python/**/__pycache__/
+python/**/*.pyc
+python/**/*.egg-info/
+python/src/*.egg-info/
+
 # Secrets
 .env
 **/.env
